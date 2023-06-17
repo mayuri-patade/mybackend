@@ -5,6 +5,10 @@ import cors from "cors";
 const app = express();
 app.use(cors()); // allowing everyone.
 
+// required in post
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
 async function addrecord(req, res) {
   const uri = "mongodb://127.0.0.1:27017";
   const client = new MongoClient(uri);
@@ -124,6 +128,59 @@ async function findAllUser(req, res) {
   }
 }
 
+// LOGIN - AUTHENTICATION
+async function loginByGet(req, res) {
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
+
+    const db = client.db("project");
+    const messageColl = db.collection("user");
+
+    let query = { email: req.query.email, password: req.query.password };
+    let userRef = await messageColl.findOne(query);
+
+    await client.close();
+
+    // Negative: UserRef CANBE NULL;
+    if (!userRef) {
+      let errorMessage = `Record Not Found or Authentication Failure: ${req.query.email}`;
+      throw new Error(errorMessage);
+    }
+
+    // Postive Scenario
+    res.json(userRef);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+}
+
+async function loginByPost(req, res) {
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
+
+    const db = client.db("project");
+    const messageColl = db.collection("user");
+
+    let query = { email: req.body.email, password: req.body.password };
+    let userRef = await messageColl.findOne(query);
+
+    await client.close();
+
+    // Negative: UserRef CANBE NULL;
+    if (!userRef) {
+      let errorMessage = `Record Not Found or Authentication Failure: ${req.body.email}`;
+      throw new Error(errorMessage);
+    }
+
+    // Postive Scenario
+    res.json(userRef);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+}
+
 // http://localhost:4000/addrecord
 app.get("/addrecord", addrecord);
 app.get("/findAll", findAllMessage);
@@ -132,6 +189,8 @@ app.get("/addtodo", addTodo);
 app.get("/find-all-todo", findAllTodo);
 app.get("/adduser", addUserRecord);
 app.get("/find-all-user", findAllUser);
+app.get("/login-by-get", loginByGet);
+app.post("/login-by-post", loginByPost);
 
 // http://localhost:4000/
 app.listen(4000);
