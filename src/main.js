@@ -46,67 +46,82 @@ function helloPost(req, res) {
 
 // NEW TODO API
 async function addTodo(req, res) {
-  const uri = "mongodb://127.0.0.1:27017";
-  const client = new MongoClient(uri);
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
 
-  const db = client.db("project");
-  const messageColl = db.collection("todo");
+    const db = client.db("project");
+    const messageColl = db.collection("todo");
 
-  let inputDoc = {
-    task: req.query.task,
-    description: req.query.description,
-  };
-  await messageColl.insertOne(inputDoc);
+    let inputDoc = {
+      task: req.query.task,
+      description: req.query.description,
+    };
+    await messageColl.insertOne(inputDoc);
 
-  await client.close();
-
-  res.json({ opr: "success" });
+    await client.close();
+    res.json({ opr: true });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 }
 
 async function findAllTodo(req, res) {
-  const uri = "mongodb://127.0.0.1:27017";
-  const client = new MongoClient(uri);
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
 
-  const db = client.db("project");
-  const messageColl = db.collection("todo");
+    const db = client.db("project");
+    const messageColl = db.collection("todo");
 
-  let list = await messageColl.find().toArray();
+    let list = await messageColl.find().toArray();
 
-  await client.close();
-  res.json(list);
+    await client.close();
+    res.json(list);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 }
 
 async function addUserRecord(req, res) {
-  const uri = "mongodb://127.0.0.1:27017";
-  const client = new MongoClient(uri);
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
 
-  const db = client.db("project");
-  const messageColl = db.collection("user");
+    const db = client.db("project");
+    const messageColl = db.collection("user");
 
-  let inputDoc = {
-    username: req.query.username,
-    password: req.query.password,
-    email: req.query.email,
-    mobile: req.query.mobile,
-  };
-  await messageColl.insertOne(inputDoc);
+    let inputDoc = {
+      username: req.query.username,
+      password: req.query.password,
+      email: req.query.email,
+      mobile: req.query.mobile,
+    };
+    await messageColl.insertOne(inputDoc);
 
-  await client.close();
+    await client.close();
 
-  res.json({ opr: "success" });
+    res.json({ opr: true });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 }
 
 async function findAllUser(req, res) {
-  const uri = "mongodb://127.0.0.1:27017";
-  const client = new MongoClient(uri);
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
 
-  const db = client.db("project");
-  const messageColl = db.collection("user");
+    const db = client.db("project");
+    const messageColl = db.collection("user");
 
-  let list = await messageColl.find().toArray();
+    let list = await messageColl.find().toArray();
 
-  await client.close();
-  res.json(list);
+    await client.close();
+    res.json(list);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 }
 
 // http://localhost:4000/addrecord
