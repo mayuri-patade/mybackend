@@ -60,6 +60,7 @@ async function addTodo(req, res) {
     let inputDoc = {
       task: req.query.task,
       description: req.query.description,
+      numpref: req.query.numpref,
     };
     await messageColl.insertOne(inputDoc);
 
@@ -128,6 +129,32 @@ async function findAllUser(req, res) {
   }
 }
 
+async function deleteUserRecord(req, res) {
+  try {
+    const uri = "mongodb://127.0.0.1:27017";
+    const client = new MongoClient(uri);
+
+    const db = client.db("project");
+    const messageColl = db.collection("user");
+
+    if (!req.query.email) {
+      throw new Error("Required field is missing");
+    }
+
+    // this line is for delete
+    await messageColl.deleteOne({ email: req.query.email });
+
+    // for delete all
+    // await messageColl.deleteMany({});
+
+    await client.close();
+
+    res.json({ opr: true });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+}
+
 // LOGIN - AUTHENTICATION
 async function loginByGet(req, res) {
   try {
@@ -188,7 +215,9 @@ app.post("/hello", helloPost);
 app.get("/addtodo", addTodo);
 app.get("/find-all-todo", findAllTodo);
 app.get("/adduser", addUserRecord);
+app.get("/delete-user", deleteUserRecord);
 app.get("/find-all-user", findAllUser);
+
 app.get("/login-by-get", loginByGet);
 app.post("/login-by-post", loginByPost);
 
